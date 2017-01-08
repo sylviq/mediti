@@ -37,12 +37,12 @@ angular
 
     $locationProvider.html5Mode(true);
   })
-  .run(($rootScope, $location, $firebaseObject, firebase, modelPaths) => {
+  .run(($rootScope, $location, $firebaseArray, firebase, modelPaths) => {
     $rootScope.goTo = path => $location.path(path);
 
     const ref = firebase.database().ref().child(modelPaths.history);
-    const syncObject = $firebaseObject(ref);
-    syncObject.$bindTo($rootScope, "history");
+    $rootScope.history = $firebaseArray(ref);
+    // syncObject.$bindTo($rootScope, "history");
   })
   .controller('MainCtrl', function ($scope, $location, $mdDialog) {
     $scope.showInfo = function() {
@@ -58,8 +58,19 @@ angular
   .controller('HistoryCtrl', function ($scope, $rootScope) {
     console.log('ENTRIES', $rootScope.history)
   })
-  .controller('SessionCtrl', function ($scope) {
-
+  .controller('SessionCtrl', function ($scope, $timeout, $rootScope) {
+    $timeout(() => {
+      console.log($rootScope.history);
+      const r = $rootScope.history.$add({
+        date: (new Date()).toString(),
+        text: 'HURRA'
+      });
+      r
+        .then(x => console.log(x))
+        .catch(err => console.error('ERROR', err));
+      console.log(r);
+     // $rootScope.goTo('/')
+    }, 2000);
   })
   .controller('ProfileCtrl', function ($scope) {
 

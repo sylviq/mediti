@@ -1,4 +1,8 @@
 <div layout="coloumn">
     <md-button ng-click="goTo('/')">Back</md-button>
     <h1>HISTORY</h1>
+
+    <div ng-repeat="entry in history">
+        {{ entry }}
+    </div>
 </div>
