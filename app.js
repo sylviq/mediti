@@ -4,13 +4,15 @@ const config = {
   authDomain: "mediti-c9a8d.firebaseapp.com",
   databaseURL: "https://mediti-c9a8d.firebaseio.com",
   storageBucket: "mediti-c9a8d.appspot.com",
-  // messagingSenderId: "822076598026"
 };
 
 firebase.initializeApp(config);
 
 angular
-  .module('mediti', ['firebase', 'ngRoute'])
+  .module('mediti', ['firebase', 'ngRoute', 'ngMaterial'])
+  .constant('modelPaths', {
+    history: 'data/history'
+  })
   .config(($routeProvider, $locationProvider) => {
     console.log('hello from config');
 
@@ -35,23 +37,30 @@ angular
 
     $locationProvider.html5Mode(true);
   })
-  .controller('SimpleCtrl', ($scope, $firebaseObject) => {
-    const ref = firebase.database().ref().child("data");
+  .run(($rootScope, $location, $firebaseObject, firebase, modelPaths) => {
+    $rootScope.goTo = path => $location.path(path);
+
+    const ref = firebase.database().ref().child(modelPaths.history);
     const syncObject = $firebaseObject(ref);
-    // synchronize the object with a three-way data binding
-    // click on `index.html` above to see it used in the DOM!
-    syncObject.$bindTo($scope, "data");
+    syncObject.$bindTo($rootScope, "history");
   })
-  .controller('MainCtrl', function ($scope) {
-    console.log('hello from main-ctrl')
+  .controller('MainCtrl', function ($scope, $location, $mdDialog) {
+    $scope.showInfo = function() {
+      const alert = $mdDialog.alert({
+        title: 'Info',
+        textContent: 'Simple application for tracking meditation session.',
+        ok: 'Close'
+      });
+
+      $mdDialog.show(alert);
+    };
   })
-  .controller('HistoryCtrl', function ($scope) {
-    console.log('HISTROY')
+  .controller('HistoryCtrl', function ($scope, $rootScope) {
+    console.log('ENTRIES', $rootScope.history)
   })
-  .controller('SessionCtrl', function ($scope, $routeParams) {
+  .controller('SessionCtrl', function ($scope) {
 
   })
   .controller('ProfileCtrl', function ($scope) {
 
-  })
-;
+  });

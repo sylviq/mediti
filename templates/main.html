@@ -1,6 +1,22 @@
-<div>
-    <h1>MAIN</h1>
-    <a href="profile">profile</a>
-    <a href="history">history</a>
-    <a href="session">session</a>
+<div layout="column" layout-fill layout-align="center center">
+    <div>
+        <md-button class="md-fab md-max" aria-label="start session">
+            <md-tooltip md-direction="top">Start session</md-tooltip>
+            <md-icon md-svg-src="img/play-circle.svg"></md-icon>
+        </md-button>
+    </div>
+    <div>
+        <md-button class="md-icon-button" aria-label="History" ng-click="goTo('/history')">
+            <md-tooltip md-direction="down">History</md-tooltip>
+            <md-icon md-svg-icon="img/playlist-play.svg"></md-icon>
+        </md-button>
+        <md-button disabled="true" class="md-icon-button md-accent" aria-label="Profile">
+            <md-tooltip md-direction="down">Profile</md-tooltip>
+            <md-icon md-svg-icon="img/account-circle.svg"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button md-info" aria-label="Info" ng-click="showInfo()">
+            <md-tooltip md-direction="down">Info</md-tooltip>
+            <md-icon md-svg-icon="img/information-outline.svg"></md-icon>
+        </md-button>
+    </div>
 </div>
