@@ -1,0 +1,26 @@
+<html>
+<head>
+
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+    <script src="https://cdn.firebase.com/libs/angularfire/2.2.0/angularfire.min.js"></script>
+
+</head>
+<body ng-app="mediti">
+<div ng-controller="SimpleCtrl">
+    <!-- anything typed in here is magically saved to our Firebase database! -->
+    <input type="text" ng-model="data.text"/>
+    <!-- all changes from our Firebase database magically appear here! -->
+    <h1>You said: {{ data.text }}</h1>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
