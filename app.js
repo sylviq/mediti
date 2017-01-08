@@ -10,9 +10,6 @@ firebase.initializeApp(config);
 
 angular
   .module('mediti', ['firebase', 'ngRoute', 'ngMaterial'])
-  .constant('modelPaths', {
-    history: 'data/history'
-  })
   .config(($routeProvider, $locationProvider) => {
     console.log('hello from config');
 
@@ -37,12 +34,25 @@ angular
 
     $locationProvider.html5Mode(true);
   })
-  .run(($rootScope, $location, $firebaseArray, firebase, modelPaths) => {
+  .run(($rootScope, $location, $firebaseArray, firebase) => {
+    // nawigacja
     $rootScope.goTo = path => $location.path(path);
 
-    const ref = firebase.database().ref().child(modelPaths.history);
+    // sesje
+    const ref = firebase.database().ref().child('/history');
     $rootScope.history = $firebaseArray(ref);
-    // syncObject.$bindTo($rootScope, "history");
+
+    $rootScope.addSession = ({ start, duration }) => {
+      // todo - check for collisions
+      return $rootScope.history.$add({ start, duration  });
+    }
+  })
+  .filter('duration', () => durationMs => {
+    const pad = n => n < 10 ? `0${n}` : `${n}`;
+    const seconds = Math.floor((durationMs / 1000) % 60);
+    const minutes = Math.floor((((durationMs / 1000) - seconds) / 60)) % 60;
+    const hours =  Math.floor(((durationMs / 1000) - minutes * 60 - seconds)) / 3600;
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   })
   .controller('MainCtrl', function ($scope, $location, $mdDialog) {
     $scope.showInfo = function() {
@@ -58,19 +68,23 @@ angular
   .controller('HistoryCtrl', function ($scope, $rootScope) {
     console.log('ENTRIES', $rootScope.history)
   })
-  .controller('SessionCtrl', function ($scope, $timeout, $rootScope) {
-    $timeout(() => {
-      console.log($rootScope.history);
-      const r = $rootScope.history.$add({
-        date: (new Date()).toString(),
-        text: 'HURRA'
-      });
-      r
-        .then(x => console.log(x))
-        .catch(err => console.error('ERROR', err));
-      console.log(r);
-     // $rootScope.goTo('/')
-    }, 2000);
+  .controller('SessionCtrl', function ($scope, $interval, $rootScope) {
+    const start = Date.now();
+    $scope.duration = 0;
+
+    const updateDuration = () => $scope.duration = Date.now() - start;
+
+    const token = $interval(updateDuration, 1000);
+
+    $scope.stop = () => {
+      updateDuration();
+      $interval.cancel(token);
+      $rootScope.addSession({
+        start: new Date(start).toJSON(),
+        duration: $scope.duration,
+      })
+        .then(() => $scope.goTo('/'));
+    };
   })
   .controller('ProfileCtrl', function ($scope) {
 
