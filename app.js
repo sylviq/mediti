@@ -37,15 +37,6 @@ angular
   .run(($rootScope, $location, $firebaseArray, firebase) => {
     // nawigacja
     $rootScope.goTo = path => $location.path(path);
-
-    // sesje
-    const ref = firebase.database().ref().child('/history');
-    $rootScope.history = $firebaseArray(ref);
-
-    $rootScope.addSession = ({ start, duration }) => {
-      // todo - check for collisions
-      return $rootScope.history.$add({ start, duration  });
-    }
   })
   .filter('duration', () => durationMs => {
     const pad = n => n < 10 ? `0${n}` : `${n}`;
@@ -54,7 +45,40 @@ angular
     const hours =  Math.floor(((durationMs / 1000) - minutes * 60 - seconds)) / 3600;
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   })
-  .controller('MainCtrl', function ($scope, $location, $mdDialog) {
+  .factory('Sessions', (firebase, $firebaseArray) => {
+    let history = null;
+
+    return {
+      init: uid => history = $firebaseArray(firebase.database().ref().child(`/users/${uid}/sessions-history`)),
+      destroy: () => {
+        history && history.$destroy();
+        history = null;
+      },
+      getHistory: () => history,
+      addSession: ({start, duration}) => history.$add({ start, duration }),
+    }
+  })
+  .controller('LoginCtrl', function ($scope, $rootScope, $firebaseAuth, Sessions) {
+    const auth = $firebaseAuth();
+
+    const initUser = () => {
+      const user = auth.$getAuth();
+      console.log('LOGIN', user);
+      if (user) {
+        $rootScope.user = user;
+        Sessions.init(user.uid);
+      }
+    }
+
+    initUser();
+
+    $scope.login = provider => {
+      auth.$signInWithPopup(provider)
+        .then(initUser)
+        .catch(err => console.error('LOGIN', err));
+    }
+  })
+  .controller('MainCtrl', function ($scope, $location, $rootScope, $mdDialog, $firebaseAuth, Sessions) {
     $scope.showInfo = function() {
       const alert = $mdDialog.alert({
         title: 'Info',
@@ -64,11 +88,17 @@ angular
 
       $mdDialog.show(alert);
     };
+
+    $scope.logout = () => $firebaseAuth().$signOut()
+      .then(() => {
+        $rootScope.user = null;
+        Sessions.destroy();
+      });
   })
-  .controller('HistoryCtrl', function ($scope, $rootScope) {
-    console.log('ENTRIES', $rootScope.history)
+  .controller('HistoryCtrl', function ($scope, Sessions) {
+    $scope.history = Sessions.getHistory();
   })
-  .controller('SessionCtrl', function ($scope, $interval, $rootScope) {
+  .controller('SessionCtrl', function ($scope, $interval, Sessions) {
     const start = Date.now();
     $scope.duration = 0;
 
@@ -79,7 +109,7 @@ angular
     $scope.stop = () => {
       updateDuration();
       $interval.cancel(token);
-      $rootScope.addSession({
+      Sessions.addSession({
         start: new Date(start).toJSON(),
         duration: $scope.duration,
       })
