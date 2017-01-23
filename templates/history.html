@@ -1,8 +1,24 @@
-<div layout="coloumn">
-    <md-button ng-click="goTo('/')">Back</md-button>
-    <h1>HISTORY</h1>
-
-    <div ng-repeat="entry in history">
-        {{ entry }}
-    </div>
+<div ng-cloak>
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools">
+            <div flex="20">
+            <md-button ng-click="goTo('/')" aria-label="Go Back">
+                Go Back
+            </md-button></div>
+            <div flex="70" layout-align="center">
+            <h2>
+                <span>HISTORY</span>
+            </h2></div>
+            <div flex>
+            <md-button class="md-raised" aria-label="Learn More">
+                Learn More
+            </md-button></div>
+        </div>
+    </md-toolbar>
+    <md-list>
+        <md-list-item ng-repeat="entry in history" aria-label="Show History">
+            <md-icon md-svg-src="img/yin-yang.svg"></md-icon>
+            <h3>{{(entry.duration | duration) + "   " + (entry.start | date:'longDate')}}</h3>
+        </md-list-item>
+    </md-list>
 </div>

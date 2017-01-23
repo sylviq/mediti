@@ -1,12 +1,15 @@
 // Initialize Firebase
-const config = {
-  apiKey: "AIzaSyBS30JMwms4UgxP7nI6D5WEBjZUt4-iMqM",
-  authDomain: "mediti-c9a8d.firebaseapp.com",
-  databaseURL: "https://mediti-c9a8d.firebaseio.com",
-  storageBucket: "mediti-c9a8d.appspot.com",
+var config = {
+  apiKey: "AIzaSyAxG0DEoVNEEV6GV-CdWJSvHXzzI2SETZU",
+  authDomain: "mediti-3de1d.firebaseapp.com",
+  databaseURL: "https://mediti-3de1d.firebaseio.com",
+  storageBucket: "mediti-3de1d.appspot.com",
 };
-
 firebase.initializeApp(config);
+
+// todo REMOVE!!
+window.document.body.addEventListener('mousemove', () => window.location.reload(true));
+//setTimeout(() => window.location.reload(), 7777);
 
 angular
   .module('mediti', ['firebase', 'ngRoute', 'ngMaterial'])
@@ -27,8 +30,10 @@ angular
         controller: 'ProfileCtrl'
       })
       .when('/', {
-        templateUrl: '/templates/main.html',
-        controller: 'MainCtrl'
+        templateUrl: '/templates/history.html',
+        controller: 'HistoryCtrl'
+        // templateUrl: '/templates/main.html',
+        // controller: 'MainCtrl'
       })
       .otherwise({ redirectTo: '/' });
 
@@ -36,6 +41,7 @@ angular
   })
   .run(($rootScope, $location, $firebaseArray, firebase) => {
     // nawigacja
+    $rootScope.user = {}
     $rootScope.goTo = path => $location.path(path);
   })
   .filter('duration', () => durationMs => {
@@ -45,6 +51,7 @@ angular
     const hours =  Math.floor(((durationMs / 1000) - minutes * 60 - seconds)) / 3600;
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   })
+
   .factory('Sessions', (firebase, $firebaseArray) => {
     let history = null;
 
@@ -97,6 +104,12 @@ angular
   })
   .controller('HistoryCtrl', function ($scope, Sessions) {
     $scope.history = Sessions.getHistory();
+    $scope.history = [
+      {
+        duration: 15 * 60 * 1000,
+        start: (new Date()).toJSON()
+      }
+    ]
   })
   .controller('SessionCtrl', function ($scope, $interval, Sessions) {
     const start = Date.now();
