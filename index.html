@@ -17,15 +17,18 @@
 </head>
 <body ng-app="mediti" ng-cloak>
 <div ng-if="!user" ng-controller="LoginCtrl" layout="column">
-    <h1>Please, login</h1>
-    <md-button aria-label="Google Login" ng-click="login('google')">
-        <md-icon md-svg-icon="img/google.svg"></md-icon>
-        Google
-    </md-button>
-    <md-button aria-label="Facebook Login" ng-click="login('facebook')">
-        <md-icon md-svg-icon="img/facebook.svg"></md-icon>
-        Facebook
-    </md-button>
+    <md-progress-linear ng-if="!isReady" md-mode="indeterminate"></md-progress-linear>
+    <div ng-if="isReady">
+        <h1>Please, login</h1>
+        <md-button aria-label="Google Login" ng-click="login('google')">
+            <md-icon md-svg-icon="img/google.svg"></md-icon>
+            Google
+        </md-button>
+        <md-button aria-label="Facebook Login" ng-click="login('facebook')">
+            <md-icon md-svg-icon="img/facebook.svg"></md-icon>
+            Facebook
+        </md-button>
+    </div>
 </div>
 <div ng-if="user" ng-view></div>
 <script src="app.js"></script>

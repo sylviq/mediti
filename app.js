@@ -7,9 +7,6 @@ var config = {
 };
 firebase.initializeApp(config);
 
-// todo REMOVE!!
-window.document.body.addEventListener('mousemove', () => window.location.reload(true));
-//setTimeout(() => window.location.reload(), 7777);
 
 angular
   .module('mediti', ['firebase', 'ngRoute', 'ngMaterial'])
@@ -30,18 +27,15 @@ angular
         controller: 'ProfileCtrl'
       })
       .when('/', {
-        templateUrl: '/templates/history.html',
-        controller: 'HistoryCtrl'
-        // templateUrl: '/templates/main.html',
-        // controller: 'MainCtrl'
+        templateUrl: '/templates/main.html',
+        controller: 'MainCtrl'
       })
       .otherwise({ redirectTo: '/' });
 
     $locationProvider.html5Mode(true);
   })
-  .run(($rootScope, $location, $firebaseArray, firebase) => {
+  .run(($rootScope, $location) => {
     // nawigacja
-    $rootScope.user = {}
     $rootScope.goTo = path => $location.path(path);
   })
   .filter('duration', () => durationMs => {
@@ -70,14 +64,15 @@ angular
 
     const initUser = () => {
       const user = auth.$getAuth();
-      console.log('LOGIN', user);
+      $scope.isReady = true;
       if (user) {
         $rootScope.user = user;
         Sessions.init(user.uid);
       }
     }
 
-    initUser();
+    auth.$onAuthStateChanged(initUser);
+
 
     $scope.login = provider => {
       auth.$signInWithPopup(provider)
@@ -104,12 +99,6 @@ angular
   })
   .controller('HistoryCtrl', function ($scope, Sessions) {
     $scope.history = Sessions.getHistory();
-    $scope.history = [
-      {
-        duration: 15 * 60 * 1000,
-        start: (new Date()).toJSON()
-      }
-    ]
   })
   .controller('SessionCtrl', function ($scope, $interval, Sessions) {
     const start = Date.now();
