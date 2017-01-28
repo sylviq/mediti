@@ -1,0 +1,30 @@
+{
+  "database": {
+    "rules": "database-rules.json"
+  },
+  "hosting": {
+    "public": "./",
+    "ignore": [
+      "firebase.json",
+      "database-rules.json",
+      "storage.rules"
+    ],
+    "redirects": [
+      {
+      "source" : "/history",
+      "destination" : "/",
+      "type" : 301
+      },
+      {
+        "source" : "/session",
+        "destination" : "/",
+        "type" : 301
+      },
+      {
+        "source" : "/chat",
+        "destination" : "/",
+        "type" : 301
+      }
+    ]
+  }
+}
