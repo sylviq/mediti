@@ -11,8 +11,6 @@ firebase.initializeApp(config);
 angular
   .module('mediti', ['firebase', 'ngRoute', 'ngMaterial'])
   .config(($routeProvider, $locationProvider) => {
-    console.log('hello from config');
-
     $routeProvider
       .when('/chat', {
         templateUrl: '/templates/chat.html',
