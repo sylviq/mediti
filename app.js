@@ -14,6 +14,10 @@ angular
     console.log('hello from config');
 
     $routeProvider
+      .when('/chat', {
+        templateUrl: '/templates/chat.html',
+        controller: 'ChatCtrl'
+      })
       .when('/history', {
         templateUrl: '/templates/history.html',
         controller: 'HistoryCtrl'
@@ -117,6 +121,9 @@ angular
       })
         .then(() => $scope.goTo('/'));
     };
+  })
+  .controller('ChatCtrl', function($scope) {
+    console.log('chat')
   })
   .controller('ProfileCtrl', function ($scope) {
 
